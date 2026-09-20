@@ -54,6 +54,7 @@ export default function Proof() {
     // Upload form state
     const [uploadTitle, setUploadTitle] = useState("");
     const [youtubeUrl, setYoutubeUrl] = useState("");
+    const [thumbnailUrl, setThumbnailUrl] = useState("");
     const [uploadType, setUploadType] = useState<"url" | "file">("url");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -139,12 +140,14 @@ export default function Proof() {
                 body: JSON.stringify({
                     title: uploadTitle,
                     url: youtubeUrl,
+                    thumbnailUrl: thumbnailUrl,
                 }),
             });
 
             if (res.ok) {
                 setUploadTitle("");
                 setYoutubeUrl("");
+                setThumbnailUrl("");
                 setIsUploadOpen(false);
                 fetchItems();
             } else {
@@ -260,7 +263,13 @@ export default function Proof() {
                             >
                                 {/* Video Player Card */}
                                 <div className="absolute inset-0 bg-black flex items-center justify-center">
-                                    {getYoutubeId(item.url) ? (
+                                    {item.thumbnailUrl ? (
+                                        <img
+                                            src={item.thumbnailUrl}
+                                            className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity duration-300"
+                                            alt={item.title}
+                                        />
+                                    ) : getYoutubeId(item.url) ? (
                                         <img
                                             src={`https://img.youtube.com/vi/${getYoutubeId(item.url)}/hqdefault.jpg`}
                                             className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-300"
@@ -498,8 +507,24 @@ export default function Proof() {
                                         placeholder="e.g. https://www.instagram.com/reel/... or https://youtube.com/watch?v=..."
                                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
                                     />
+                                </div>
+
+                                {/* Thumbnail Image URL Input */}
+                                <div className="space-y-2">
+                                    <label htmlFor="thumbnailUrl" className="text-sm font-semibold text-gray-300 flex items-center justify-between">
+                                        <span>Thumbnail Image Link</span>
+                                        <span className="text-xs text-gray-400 font-normal">(Optional)</span>
+                                    </label>
+                                    <input
+                                        id="thumbnailUrl"
+                                        type="text"
+                                        value={thumbnailUrl}
+                                        onChange={(e) => setThumbnailUrl(e.target.value)}
+                                        placeholder="e.g. https://.../thumbnail.jpg (Leave empty for default)"
+                                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
+                                    />
                                     <p className="text-xs text-gray-400">
-                                        Supports YouTube videos, YouTube Shorts, and Instagram Reels links.
+                                        Optional custom thumbnail image for the preview card.
                                     </p>
                                 </div>
 

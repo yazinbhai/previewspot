@@ -78,16 +78,19 @@ export async function POST(req: Request) {
     const contentType = req.headers.get("content-type") || "";
     let title = "";
     let url = "";
+    let thumbnailUrl = "";
 
     if (contentType.includes("application/json")) {
       const body = await req.json();
       title = body.title || "Untitled Video";
       url = body.url || "";
+      thumbnailUrl = body.thumbnailUrl || body.thumbnail || "";
     } else {
       const formData = await req.formData();
       const file = formData.get("file") as File | null;
       const youtubeUrl = formData.get("youtubeUrl") as string | null;
       title = formData.get("title") as string || "Untitled Video";
+      thumbnailUrl = formData.get("thumbnailUrl") as string || formData.get("thumbnail") as string || "";
 
       if (youtubeUrl) {
         url = youtubeUrl;
@@ -125,6 +128,7 @@ export async function POST(req: Request) {
       id: Date.now().toString(),
       title,
       url,
+      thumbnailUrl,
       date: new Date().toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
