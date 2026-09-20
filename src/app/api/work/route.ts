@@ -149,30 +149,23 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const id = body.id;
     if (!id) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
+    const targetId = String(id);
     let items = await getWorkItems();
-    const itemToDelete = items.find((item: any) => item.id === id);
 
-    if (!itemToDelete) {
+    const initialCount = items.length;
+    items = items.filter((item: any) => String(item.id) !== targetId && item.url !== id);
+
+    if (items.length === initialCount) {
       return NextResponse.json({ error: "Item not found" }, { status: 404 });
     }
 
-    if (itemToDelete.url && itemToDelete.url.startsWith("/uploads/")) {
-      const filePath = path.join(process.cwd(), "public", itemToDelete.url);
-      if (existsSync(filePath)) {
-        await unlink(filePath).catch((err) => {
-          console.warn("Failed to delete local file:", err);
-        });
-      }
-    }
-
-    items = items.filter((item: any) => item.id !== id);
     await saveWorkItems(items);
-
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("DELETE work error:", error);

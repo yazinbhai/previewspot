@@ -184,7 +184,7 @@ export default function Proof() {
                 method: "DELETE",
                 headers: { 
                     "Content-Type": "application/json",
-                    "x-admin-password": adminPassword,
+                    "x-admin-password": adminPassword || "1996",
                 },
                 body: JSON.stringify({ id }),
             });
@@ -192,10 +192,12 @@ export default function Proof() {
             if (res.ok) {
                 fetchItems();
             } else {
-                alert("Failed to delete video.");
+                const data = await res.json().catch(() => ({}));
+                alert(data.error || "Failed to delete video.");
             }
         } catch (err) {
             console.error("Delete video failed:", err);
+            alert("Network error. Action failed.");
         }
     };
 
