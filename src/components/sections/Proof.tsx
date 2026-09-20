@@ -26,6 +26,13 @@ const getYoutubeId = (url: string) => {
     return (match && match[2].length === 11) ? match[2] : null;
 };
 
+const getInstagramId = (url: string) => {
+    if (!url) return null;
+    const regExp = /(?:instagram\.com\/(?:p|reel|reels)\/)([\w-]+)/;
+    const match = url.match(regExp);
+    return match ? match[1] : null;
+};
+
 const testimonials = [
     { quote: "Our CPA dropped by 40% after switching to their AI creatives. Insane.", author: "Founder, DTC Brand" },
     { quote: "Finally, an agency that understands performance over vanity metrics.", author: "CMO, SaaS Startup" },
@@ -114,13 +121,8 @@ export default function Proof() {
             return;
         }
 
-        if (uploadType === "url" && !youtubeUrl.trim()) {
-            setUploadError("Please enter a video URL or YouTube link.");
-            return;
-        }
-
-        if (uploadType === "file" && !selectedFile) {
-            setUploadError("Please select a video file.");
+        if (!youtubeUrl.trim()) {
+            setUploadError("Please enter a YouTube or Instagram Reel link.");
             return;
         }
 
@@ -128,37 +130,21 @@ export default function Proof() {
         setUploadError("");
 
         try {
-            let res;
-            if (uploadType === "file" && selectedFile) {
-                const formData = new FormData();
-                formData.append("title", uploadTitle);
-                formData.append("file", selectedFile);
-
-                res = await fetch("/api/work", {
-                    method: "POST",
-                    headers: {
-                        "x-admin-password": adminPassword,
-                    },
-                    body: formData,
-                });
-            } else {
-                res = await fetch("/api/work", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-admin-password": adminPassword,
-                    },
-                    body: JSON.stringify({
-                        title: uploadTitle,
-                        url: youtubeUrl,
-                    }),
-                });
-            }
+            const res = await fetch("/api/work", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-admin-password": adminPassword || "1996",
+                },
+                body: JSON.stringify({
+                    title: uploadTitle,
+                    url: youtubeUrl,
+                }),
+            });
 
             if (res.ok) {
                 setUploadTitle("");
                 setYoutubeUrl("");
-                setSelectedFile(null);
                 setIsUploadOpen(false);
                 fetchItems();
             } else {
@@ -280,6 +266,12 @@ export default function Proof() {
                                             className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-300"
                                             alt={item.title}
                                         />
+                                    ) : getInstagramId(item.url) ? (
+                                        <iframe
+                                            src={`https://www.instagram.com/p/${getInstagramId(item.url)}/embed/`}
+                                            className="w-full h-full border-0 pointer-events-none opacity-80 group-hover:opacity-100 transition-opacity"
+                                            scrolling="no"
+                                        />
                                     ) : (
                                         <video
                                             src={item.url}
@@ -390,23 +382,32 @@ export default function Proof() {
                         {/* Modal Box */}
                         {(() => {
                             const ytId = getYoutubeId(activeLightbox.url);
-                            const isShort = activeLightbox.url.includes("shorts") || activeLightbox.url.includes("/shorts/");
-                            const isVertical = !ytId || isShort;
+                            const igId = getInstagramId(activeLightbox.url);
 
                             return (
                                 <motion.div
                                     initial={{ scale: 0.95, y: 20 }}
                                     animate={{ scale: 1, y: 0 }}
                                     exit={{ scale: 0.95, y: 20 }}
-                                    className="relative w-full max-w-4xl max-h-[85vh] bg-transparent rounded-2xl overflow-hidden flex flex-col items-center transition-all duration-300"
+                                    className={`relative w-full bg-transparent rounded-2xl overflow-hidden flex flex-col items-center transition-all duration-300 ${
+                                        igId ? "max-w-md max-h-[85vh]" : "max-w-4xl max-h-[85vh]"
+                                    }`}
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    <div className="w-full aspect-video max-h-[70vh] bg-black rounded-xl overflow-hidden shadow-2xl border border-white/10">
+                                    <div className={`w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-white/10 ${
+                                        igId ? "aspect-[9/16] max-h-[70vh]" : "aspect-video max-h-[70vh]"
+                                    }`}>
                                         {ytId ? (
                                             <iframe
                                                 src={`https://www.youtube.com/embed/${ytId}?autoplay=1`}
                                                 className="w-full h-full border-0"
                                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        ) : igId ? (
+                                            <iframe
+                                                src={`https://www.instagram.com/p/${igId}/embed/`}
+                                                className="w-full h-full border-0"
                                                 allowFullScreen
                                             />
                                         ) : (
@@ -478,74 +479,29 @@ export default function Proof() {
                                         required
                                         value={uploadTitle}
                                         onChange={(e) => setUploadTitle(e.target.value)}
-                                        placeholder="e.g. E-Commerce Fashion Reel Ad"
+                                        placeholder="e.g. Fashion Brand Instagram Reel Ad"
                                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
                                     />
                                 </div>
 
-                                {/* Source Type Tabs */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-gray-300">
-                                        Video Input Method
-                                    </label>
-                                    <div className="flex rounded-xl bg-white/5 p-1 border border-white/10">
-                                        <button
-                                            type="button"
-                                            onClick={() => setUploadType("url")}
-                                            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                                                uploadType === "url" 
-                                                    ? "bg-[#FF0033] text-white shadow" 
-                                                    : "text-gray-400 hover:text-white"
-                                            }`}
-                                        >
-                                            Paste Video Link (YouTube / MP4 / Web)
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setUploadType("file")}
-                                            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                                                uploadType === "file" 
-                                                    ? "bg-[#FF0033] text-white shadow" 
-                                                    : "text-gray-400 hover:text-white"
-                                            }`}
-                                        >
-                                            Upload MP4 File
-                                        </button>
-                                    </div>
-                                </div>
-
                                 {/* Video Link Input */}
-                                {uploadType === "url" && (
-                                    <div className="space-y-2">
-                                        <label htmlFor="youtubeUrl" className="text-sm font-semibold text-gray-300">
-                                            Video URL
-                                        </label>
-                                        <input
-                                            id="youtubeUrl"
-                                            type="text"
-                                            value={youtubeUrl}
-                                            onChange={(e) => setYoutubeUrl(e.target.value)}
-                                            placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtube.com/shorts/... or https://.../video.mp4"
-                                            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
-                                        />
-                                    </div>
-                                )}
-
-                                {/* File Upload Input */}
-                                {uploadType === "file" && (
-                                    <div className="space-y-2">
-                                        <label htmlFor="file" className="text-sm font-semibold text-gray-300">
-                                            Select Video File (.mp4, .webm, .mov)
-                                        </label>
-                                        <input
-                                            id="file"
-                                            type="file"
-                                            accept="video/mp4,video/webm,video/quicktime"
-                                            onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                                            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20"
-                                        />
-                                    </div>
-                                )}
+                                <div className="space-y-2">
+                                    <label htmlFor="youtubeUrl" className="text-sm font-semibold text-gray-300">
+                                        Video Link (YouTube or Instagram Reel)
+                                    </label>
+                                    <input
+                                        id="youtubeUrl"
+                                        type="text"
+                                        required
+                                        value={youtubeUrl}
+                                        onChange={(e) => setYoutubeUrl(e.target.value)}
+                                        placeholder="e.g. https://www.instagram.com/reel/... or https://youtube.com/watch?v=..."
+                                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
+                                    />
+                                    <p className="text-xs text-gray-400">
+                                        Supports YouTube videos, YouTube Shorts, and Instagram Reels links.
+                                    </p>
+                                </div>
 
                                 {/* Error Message */}
                                 {uploadError && (
@@ -566,7 +522,7 @@ export default function Proof() {
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={isUploading || !uploadTitle || (uploadType === "url" ? !youtubeUrl : !selectedFile)}
+                                        disabled={isUploading || !uploadTitle || !youtubeUrl}
                                         className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#FF0033] via-[#FF3355] to-[#FF9900] text-white font-semibold flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 disabled:opacity-50"
                                     >
                                         {isUploading ? (
