@@ -27,7 +27,7 @@ export default function Hero() {
                     className="absolute inset-0 w-full h-full object-cover z-0"
                 >
                     {/* Path starts from the public folder, so / means public/ */}
-                    <source src="/previewspot-logo-animation.mp4" type="video/mp4" />
+                    <source src="/only-reel.mp4" type="video/mp4" />
                 </video>
             </motion.div>
 
