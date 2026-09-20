@@ -258,7 +258,7 @@ export default function Proof() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                         {items.map((item, idx) => (
                             <motion.div
                                 key={item.id || idx}
@@ -267,7 +267,7 @@ export default function Proof() {
                                 viewport={{ once: true, margin: "-100px" }}
                                 transition={{ duration: 0.5, delay: idx * 0.1 }}
                                 whileHover={{ scale: 1.02 }}
-                                className="aspect-[9/16] bg-gradient-to-br from-white/5 to-white/10 rounded-2xl relative overflow-hidden group cursor-pointer border border-white/10"
+                                className="aspect-video bg-gradient-to-br from-white/5 to-white/10 rounded-2xl relative overflow-hidden group cursor-pointer border border-white/10"
                                 onClick={() => setActiveLightbox(item)}
                             >
                                 {/* Video Player Card */}
@@ -396,14 +396,10 @@ export default function Proof() {
                                     initial={{ scale: 0.95, y: 20 }}
                                     animate={{ scale: 1, y: 0 }}
                                     exit={{ scale: 0.95, y: 20 }}
-                                    className={`relative w-full bg-transparent rounded-2xl overflow-hidden flex flex-col items-center transition-all duration-300 ${
-                                        isVertical ? "max-w-lg max-h-[85vh]" : "max-w-4xl max-h-[85vh]"
-                                    }`}
+                                    className="relative w-full max-w-4xl max-h-[85vh] bg-transparent rounded-2xl overflow-hidden flex flex-col items-center transition-all duration-300"
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    <div className={`w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-white/10 ${
-                                        isVertical ? "aspect-[9/16] max-h-[70vh]" : "aspect-video max-h-[70vh]"
-                                    }`}>
+                                    <div className="w-full aspect-video max-h-[70vh] bg-black rounded-xl overflow-hidden shadow-2xl border border-white/10">
                                         {ytId ? (
                                             <iframe
                                                 src={`https://www.youtube.com/embed/${ytId}?autoplay=1`}
