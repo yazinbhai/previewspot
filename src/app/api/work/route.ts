@@ -26,7 +26,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const password = req.headers.get("x-admin-password");
-    if (password !== (process.env.ADMIN_PASSWORD || "admin123")) {
+    if (password !== (process.env.ADMIN_PASSWORD || "1996")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -110,7 +110,7 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const password = req.headers.get("x-admin-password");
-    if (password !== (process.env.ADMIN_PASSWORD || "admin123")) {
+    if (password !== (process.env.ADMIN_PASSWORD || "1996")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
