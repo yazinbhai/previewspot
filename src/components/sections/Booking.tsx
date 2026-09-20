@@ -53,7 +53,7 @@ export default function Booking() {
                 >
                     {/* Calendly Inline Embed */}
                     <iframe
-                        src="https://calendly.com/yazintazad/30min?background_color=0B0B0F&text_color=EAEAEA&primary_color=FF0033"
+                        src="https://calendly.com/previewspotfilms/30min?background_color=0B0B0F&text_color=EAEAEA&primary_color=FF0033"
                         width="100%"
                         height="100%"
                         frameBorder="0"
