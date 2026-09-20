@@ -41,19 +41,19 @@ export default function Header() {
                     <nav className="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest font-cinematic font-bold">
                         <a 
                             href="#work-section" 
-                            className="text-white/60 hover:text-[#00E5FF] transition-colors cursor-pointer"
+                            className="text-white/60 hover:text-[#FF3355] transition-colors cursor-pointer"
                         >
                             Work
                         </a>
                         <a 
                             href="#process-section" 
-                            className="text-white/60 hover:text-[#00E5FF] transition-colors cursor-pointer"
+                            className="text-white/60 hover:text-[#FF3355] transition-colors cursor-pointer"
                         >
                             Process
                         </a>
                         <a 
                             href="#pricing-section" 
-                            className="text-white/60 hover:text-[#00E5FF] transition-colors cursor-pointer"
+                            className="text-white/60 hover:text-[#FF3355] transition-colors cursor-pointer"
                         >
                             Pricing
                         </a>
@@ -61,7 +61,7 @@ export default function Header() {
 
                     <a
                         href="#booking-section"
-                        className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#00E5FF] to-[#8B5CF6] text-white font-bold text-[10px] sm:text-xs tracking-wider uppercase transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_15px_rgba(0,229,255,0.4)]"
+                        className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#FF0033] via-[#FF3355] to-[#FF9900] text-white font-bold text-[10px] sm:text-xs tracking-wider uppercase transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_20px_rgba(255,0,51,0.5)]"
                     >
                         Book A Call
                     </a>

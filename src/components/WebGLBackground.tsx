@@ -25,11 +25,11 @@ export function NeuralNetwork() {
             positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
             positions[i * 3 + 2] = radius * Math.cos(phi);
 
-            // Color gradient (Electric Blue to Neon Purple)
+            // Color gradient (Crimson Red to Golden Amber)
             const color = new THREE.Color();
             color.lerpColors(
-                new THREE.Color("#00E5FF"),
-                new THREE.Color("#8B5CF6"),
+                new THREE.Color("#FF0033"),
+                new THREE.Color("#FF9900"),
                 Math.random()
             );
 
@@ -101,9 +101,9 @@ export function NeuralNetwork() {
                     />
                 </bufferGeometry>
                 <lineBasicMaterial
-                    color="#00E5FF"
+                    color="#FF1E42"
                     transparent
-                    opacity={0.15}
+                    opacity={0.2}
                     blending={THREE.AdditiveBlending}
                 />
             </lineSegments>

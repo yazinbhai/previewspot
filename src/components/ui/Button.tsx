@@ -24,7 +24,7 @@ export function Button({
 
     const variants = {
         primary: "bg-white text-black hover:bg-gray-200",
-        secondary: "bg-gradient-to-r from-[#00E5FF] to-[#8B5CF6] text-white hover:shadow-[0_0_20px_rgba(0,229,255,0.4)]",
+        secondary: "bg-gradient-to-r from-[#FF0033] via-[#FF3355] to-[#FF9900] text-white hover:shadow-[0_0_20px_rgba(255,0,51,0.5)]",
         outline: "border border-white/20 hover:border-white/50 bg-black/50 backdrop-blur-sm text-white",
     };
 

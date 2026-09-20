@@ -7,32 +7,32 @@ import { Play, Sparkles, Zap, DollarSign, Camera, Network } from "lucide-react";
 export default function Solution() {
     const features = [
         {
-            icon: <Play className="w-8 h-8 text-[#00E5FF]" />,
+            icon: <Play className="w-8 h-8 text-[#FF0033]" />,
             title: "Scripted for Performance",
             description: "Data-backed hooks and psychological triggers designed to maximize watch time and conversion."
         },
         {
-            icon: <Camera className="w-8 h-8 text-[#00E5FF]" />,
+            icon: <Camera className="w-8 h-8 text-[#FF5500]" />,
             title: "UGC-Style Realism",
             description: "Authentic, native-feeling content that bypasses ad fatigue and builds instant trust."
         },
         {
-            icon: <Sparkles className="w-8 h-8 text-[#8B5CF6]" />,
+            icon: <Sparkles className="w-8 h-8 text-[#FF9900]" />,
             title: "AI-Generated Visuals",
             description: "Cinematic B-roll, dynamic text animations, and hyper-realistic AI avatars tailored to your brand."
         },
         {
-            icon: <Zap className="w-8 h-8 text-[#8B5CF6]" />,
+            icon: <Zap className="w-8 h-8 text-[#FF0033]" />,
             title: "Fast Turnaround",
             description: "From brief to final render in a fraction of the time of traditional agencies."
         },
         {
-            icon: <DollarSign className="w-8 h-8 text-[#00E5FF]" />,
+            icon: <DollarSign className="w-8 h-8 text-[#FF5500]" />,
             title: "Budget-Friendly",
             description: "Agency-quality production at a startup-friendly price point. Zero hidden fees."
         },
         {
-            icon: <Network className="w-8 h-8 text-[#00E5FF]" />,
+            icon: <Network className="w-8 h-8 text-[#FF9900]" />,
             title: "Advanced Generation Architectures",
             description: "We leverage advanced generation architectures for fluid motion—to ensure your brand's visuals are pristine, native, and conversion-ready."
         }

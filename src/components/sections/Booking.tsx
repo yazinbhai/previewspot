@@ -49,11 +49,11 @@ export default function Booking() {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="glassmorphism rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,229,255,0.05)] border border-white/10 h-[700px] w-full relative"
+                    className="glassmorphism rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(255,0,51,0.12)] border border-white/10 h-[700px] w-full relative"
                 >
                     {/* Calendly Inline Embed */}
                     <iframe
-                        src="https://calendly.com/yazintazad/30min?background_color=0B0B0F&text_color=EAEAEA&primary_color=00E5FF"
+                        src="https://calendly.com/yazintazad/30min?background_color=0B0B0F&text_color=EAEAEA&primary_color=FF0033"
                         width="100%"
                         height="100%"
                         frameBorder="0"
@@ -66,7 +66,7 @@ export default function Booking() {
                     <p className="text-white/50 mb-4 font-cinematic uppercase tracking-widest text-xs">
                         Or reach out directly
                     </p>
-                    <a href="mailto:hello@previewspotfilms.com" className="text-xl font-bold text-white hover:text-[#00E5FF] transition-colors">
+                    <a href="mailto:hello@previewspotfilms.com" className="text-xl font-bold text-white hover:text-[#FF0033] transition-colors">
                         hello@previewspotfilms.com
                     </a>
                 </div>

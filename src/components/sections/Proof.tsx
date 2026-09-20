@@ -265,7 +265,7 @@ export default function Proof() {
 
                                 {/* Custom Glow & Play Overlay */}
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <div className="w-14 h-14 rounded-full bg-[#00E5FF]/20 hover:bg-[#00E5FF]/40 backdrop-blur-md flex items-center justify-center border border-[#00E5FF]/30 transition-transform duration-300 group-hover:scale-110">
+                                    <div className="w-14 h-14 rounded-full bg-[#FF0033]/20 hover:bg-[#FF0033]/40 backdrop-blur-md flex items-center justify-center border border-[#FF0033]/30 transition-transform duration-300 group-hover:scale-110">
                                         <Play className="w-5 h-5 text-white fill-white ml-1" />
                                     </div>
                                 </div>
@@ -319,7 +319,7 @@ export default function Proof() {
                                 &quot;{test.quote}&quot;
                             </p>
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#00E5FF] to-[#8B5CF6]" />
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#FF0033] via-[#FF3355] to-[#FF9900]" />
                                 <span className="text-gray-400 font-medium tracking-wide">
                                     {test.author}
                                 </span>
@@ -396,7 +396,7 @@ export default function Proof() {
 
                                     {/* Title & Metadata */}
                                     <div className="w-full text-center mt-6 text-white px-4">
-                                        <p className="text-[#00E5FF] text-xs font-semibold uppercase tracking-wider mb-2">
+                                        <p className="text-[#FF9900] text-xs font-semibold uppercase tracking-wider mb-2">
                                             Ad Creative &bull; {activeLightbox.date}
                                         </p>
                                         <h3 className="text-xl font-cinematic font-bold">{activeLightbox.title}</h3>
@@ -428,7 +428,7 @@ export default function Proof() {
                             {/* Modal Header */}
                             <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-black text-white">
                                 <h3 className="text-xl font-cinematic font-bold flex items-center gap-2">
-                                    <Upload className="w-5 h-5 text-[#00E5FF]" />
+                                    <Upload className="w-5 h-5 text-[#FF0033]" />
                                     <span>Add YouTube Ad Video</span>
                                 </h3>
                                 <button
@@ -453,7 +453,7 @@ export default function Proof() {
                                         value={uploadTitle}
                                         onChange={(e) => setUploadTitle(e.target.value)}
                                         placeholder="e.g. E-Commerce Fashion Reel Ad"
-                                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#00E5FF]/50 text-white transition-colors"
+                                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
                                     />
                                 </div>
 
@@ -469,7 +469,7 @@ export default function Proof() {
                                         value={youtubeUrl}
                                         onChange={(e) => setYoutubeUrl(e.target.value)}
                                         placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtube.com/shorts/..."
-                                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#00E5FF]/50 text-white transition-colors"
+                                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
                                     />
                                 </div>
 
@@ -493,7 +493,7 @@ export default function Proof() {
                                     <button
                                         type="submit"
                                         disabled={isUploading || !youtubeUrl}
-                                        className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#00E5FF] to-[#8B5CF6] text-white font-semibold flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 disabled:opacity-50"
+                                        className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#FF0033] via-[#FF3355] to-[#FF9900] text-white font-semibold flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 disabled:opacity-50"
                                     >
                                         {isUploading ? (
                                             <>
@@ -531,7 +531,7 @@ export default function Proof() {
                             {/* Modal Header */}
                             <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-black text-white">
                                 <h3 className="text-lg font-cinematic font-bold flex items-center gap-2">
-                                    <Lock className="w-4 h-4 text-[#00E5FF]" />
+                                    <Lock className="w-4 h-4 text-[#FF0033]" />
                                     <span>Admin Access</span>
                                 </h3>
                                 <button
@@ -556,7 +556,7 @@ export default function Proof() {
                                         value={loginPassword}
                                         onChange={(e) => setLoginPassword(e.target.value)}
                                         placeholder="Enter passcode"
-                                        className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#00E5FF]/50 text-white transition-colors"
+                                        className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
                                     />
                                 </div>
 
@@ -578,7 +578,7 @@ export default function Proof() {
                                     <button
                                         type="submit"
                                         disabled={isVerifying || !loginPassword}
-                                        className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#00E5FF] to-[#8B5CF6] text-white text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 disabled:opacity-50"
+                                        className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#FF0033] via-[#FF3355] to-[#FF9900] text-white text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 disabled:opacity-50"
                                     >
                                         {isVerifying ? (
                                             <>

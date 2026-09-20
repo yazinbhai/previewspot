@@ -9,7 +9,7 @@ import Booking from "@/components/sections/Booking";
 
 export default function Home() {
   return (
-    <main className="bg-[#0B0B0F] min-h-screen text-white overflow-hidden selection:bg-[#00E5FF]/30">
+    <main className="bg-[#0B0B0F] min-h-screen text-white overflow-hidden selection:bg-[#FF0033]/30">
       <Hero />
       <Problem />
       <Shift />

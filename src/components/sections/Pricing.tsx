@@ -23,15 +23,15 @@ export default function Pricing() {
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-6">
                         <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 rounded-full bg-[#00E5FF] shadow-[0_0_10px_#00E5FF]" />
+                            <div className="w-2 h-2 rounded-full bg-[#FF0033] shadow-[0_0_10px_#FF0033]" />
                             <span className="text-white/80 uppercase tracking-widest text-sm font-bold">No Hidden Fees</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 rounded-full bg-[#8B5CF6] shadow-[0_0_10px_#8B5CF6]" />
+                            <div className="w-2 h-2 rounded-full bg-[#FF9900] shadow-[0_0_10px_#FF9900]" />
                             <span className="text-white/80 uppercase tracking-widest text-sm font-bold">Unlimited Revisions</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 rounded-full bg-[#00E5FF] shadow-[0_0_10px_#00E5FF]" />
+                            <div className="w-2 h-2 rounded-full bg-[#FF0033] shadow-[0_0_10px_#FF0033]" />
                             <span className="text-white/80 uppercase tracking-widest text-sm font-bold">Full Ownership</span>
                         </div>
                     </div>
