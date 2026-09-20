@@ -47,6 +47,8 @@ export default function Proof() {
     // Upload form state
     const [uploadTitle, setUploadTitle] = useState("");
     const [youtubeUrl, setYoutubeUrl] = useState("");
+    const [uploadType, setUploadType] = useState<"url" | "file">("url");
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState("");
 
@@ -106,9 +108,19 @@ export default function Proof() {
 
     const handleUploadSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const youtubeId = getYoutubeId(youtubeUrl);
-        if (!youtubeId) {
-            setUploadError("Please enter a valid YouTube or YouTube Shorts URL.");
+        
+        if (!uploadTitle.trim()) {
+            setUploadError("Please enter a video title.");
+            return;
+        }
+
+        if (uploadType === "url" && !youtubeUrl.trim()) {
+            setUploadError("Please enter a video URL or YouTube link.");
+            return;
+        }
+
+        if (uploadType === "file" && !selectedFile) {
+            setUploadError("Please select a video file.");
             return;
         }
 
@@ -116,26 +128,42 @@ export default function Proof() {
         setUploadError("");
 
         try {
-            const res = await fetch("/api/work", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-admin-password": adminPassword,
-                },
-                body: JSON.stringify({
-                    title: uploadTitle,
-                    url: youtubeUrl,
-                }),
-            });
+            let res;
+            if (uploadType === "file" && selectedFile) {
+                const formData = new FormData();
+                formData.append("title", uploadTitle);
+                formData.append("file", selectedFile);
+
+                res = await fetch("/api/work", {
+                    method: "POST",
+                    headers: {
+                        "x-admin-password": adminPassword,
+                    },
+                    body: formData,
+                });
+            } else {
+                res = await fetch("/api/work", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-admin-password": adminPassword,
+                    },
+                    body: JSON.stringify({
+                        title: uploadTitle,
+                        url: youtubeUrl,
+                    }),
+                });
+            }
 
             if (res.ok) {
                 setUploadTitle("");
                 setYoutubeUrl("");
+                setSelectedFile(null);
                 setIsUploadOpen(false);
                 fetchItems();
             } else {
                 const errorData = await res.json();
-                setUploadError(errorData.error || "Failed to add YouTube video. Please try again.");
+                setUploadError(errorData.error || "Failed to add video. Please try again.");
             }
         } catch (err) {
             setUploadError("Network error. Action failed.");
@@ -429,7 +457,7 @@ export default function Proof() {
                             <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-black text-white">
                                 <h3 className="text-xl font-cinematic font-bold flex items-center gap-2">
                                     <Upload className="w-5 h-5 text-[#FF0033]" />
-                                    <span>Add YouTube Ad Video</span>
+                                    <span>Add Video to Showcase</span>
                                 </h3>
                                 <button
                                     onClick={() => setIsUploadOpen(false)}
@@ -457,21 +485,69 @@ export default function Proof() {
                                     />
                                 </div>
 
-                                {/* YouTube URL */}
+                                {/* Source Type Tabs */}
                                 <div className="space-y-2">
-                                    <label htmlFor="youtubeUrl" className="text-sm font-semibold text-gray-300">
-                                        YouTube Link
+                                    <label className="text-sm font-semibold text-gray-300">
+                                        Video Input Method
                                     </label>
-                                    <input
-                                        id="youtubeUrl"
-                                        type="url"
-                                        required
-                                        value={youtubeUrl}
-                                        onChange={(e) => setYoutubeUrl(e.target.value)}
-                                        placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtube.com/shorts/..."
-                                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
-                                    />
+                                    <div className="flex rounded-xl bg-white/5 p-1 border border-white/10">
+                                        <button
+                                            type="button"
+                                            onClick={() => setUploadType("url")}
+                                            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                                                uploadType === "url" 
+                                                    ? "bg-[#FF0033] text-white shadow" 
+                                                    : "text-gray-400 hover:text-white"
+                                            }`}
+                                        >
+                                            Paste Video Link (YouTube / MP4 / Web)
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setUploadType("file")}
+                                            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                                                uploadType === "file" 
+                                                    ? "bg-[#FF0033] text-white shadow" 
+                                                    : "text-gray-400 hover:text-white"
+                                            }`}
+                                        >
+                                            Upload MP4 File
+                                        </button>
+                                    </div>
                                 </div>
+
+                                {/* Video Link Input */}
+                                {uploadType === "url" && (
+                                    <div className="space-y-2">
+                                        <label htmlFor="youtubeUrl" className="text-sm font-semibold text-gray-300">
+                                            Video URL
+                                        </label>
+                                        <input
+                                            id="youtubeUrl"
+                                            type="text"
+                                            value={youtubeUrl}
+                                            onChange={(e) => setYoutubeUrl(e.target.value)}
+                                            placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtube.com/shorts/... or https://.../video.mp4"
+                                            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
+                                        />
+                                    </div>
+                                )}
+
+                                {/* File Upload Input */}
+                                {uploadType === "file" && (
+                                    <div className="space-y-2">
+                                        <label htmlFor="file" className="text-sm font-semibold text-gray-300">
+                                            Select Video File (.mp4, .webm, .mov)
+                                        </label>
+                                        <input
+                                            id="file"
+                                            type="file"
+                                            accept="video/mp4,video/webm,video/quicktime"
+                                            onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                                            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20"
+                                        />
+                                    </div>
+                                )}
 
                                 {/* Error Message */}
                                 {uploadError && (
@@ -492,7 +568,7 @@ export default function Proof() {
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={isUploading || !youtubeUrl}
+                                        disabled={isUploading || !uploadTitle || (uploadType === "url" ? !youtubeUrl : !selectedFile)}
                                         className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#FF0033] via-[#FF3355] to-[#FF9900] text-white font-semibold flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 disabled:opacity-50"
                                     >
                                         {isUploading ? (
