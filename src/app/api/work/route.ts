@@ -1,66 +1,36 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir, readFile, unlink } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
-import os from "os";
+import { createClient } from "@supabase/supabase-js";
 
-const DEFAULT_ITEMS: any[] = [];
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-// Helper paths
-const getPublicJsonPath = () => path.join(process.cwd(), "public", "uploads", "work.json");
-const getTmpJsonPath = () => path.join(os.tmpdir(), "previewspot_work.json");
+// Use the Vercel integration variables (or manually added ones)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-async function getWorkItems(): Promise<any[]> {
-  const tmpPath = getTmpJsonPath();
-  const publicPath = getPublicJsonPath();
-
-  if (existsSync(tmpPath)) {
-    try {
-      const content = await readFile(tmpPath, "utf-8");
-      return JSON.parse(content);
-    } catch (e) {
-      console.error("Error reading tmp work.json:", e);
-    }
-  }
-
-  if (existsSync(publicPath)) {
-    try {
-      const content = await readFile(publicPath, "utf-8");
-      return JSON.parse(content);
-    } catch (e) {
-      console.error("Error reading public work.json:", e);
-    }
-  }
-
-  return DEFAULT_ITEMS;
-}
-
-async function saveWorkItems(items: any[]) {
-  const jsonString = JSON.stringify(items, null, 2);
-
-  // 1. Write to /tmp (always writable in Vercel & local environments)
-  const tmpPath = getTmpJsonPath();
-  await writeFile(tmpPath, jsonString, "utf-8");
-
-  // 2. Try writing to public/uploads/work.json (local dev environment)
-  try {
-    const publicPath = getPublicJsonPath();
-    const publicDir = path.dirname(publicPath);
-    if (!existsSync(publicDir)) {
-      await mkdir(publicDir, { recursive: true });
-    }
-    await writeFile(publicPath, jsonString, "utf-8");
-  } catch (err: any) {
-    // Ignore EROFS error in serverless environment
-    if (err.code !== "EROFS") {
-      console.warn("Could not write to public/uploads:", err);
-    }
-  }
-}
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function GET() {
   try {
-    const items = await getWorkItems();
+    const { data, error } = await supabase
+      .from("work_items")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    const items = data.map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      url: item.url,
+      thumbnailUrl: item.thumbnail_url || "",
+      date: new Date(item.created_at).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+    }));
+
     return NextResponse.json(items);
   } catch (error: any) {
     console.error("GET work error:", error);
@@ -75,69 +45,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const contentType = req.headers.get("content-type") || "";
-    let title = "";
-    let url = "";
-    let thumbnailUrl = "";
-
-    if (contentType.includes("application/json")) {
-      const body = await req.json();
-      title = body.title || "Untitled Video";
-      url = body.url || "";
-      thumbnailUrl = body.thumbnailUrl || body.thumbnail || "";
-    } else {
-      const formData = await req.formData();
-      const file = formData.get("file") as File | null;
-      const youtubeUrl = formData.get("youtubeUrl") as string | null;
-      title = formData.get("title") as string || "Untitled Video";
-      thumbnailUrl = formData.get("thumbnailUrl") as string || formData.get("thumbnail") as string || "";
-
-      if (youtubeUrl) {
-        url = youtubeUrl;
-      } else if (file) {
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-
-        // Try writing to public/uploads folder first
-        try {
-          const uploadDir = path.join(process.cwd(), "public", "uploads");
-          if (!existsSync(uploadDir)) {
-            await mkdir(uploadDir, { recursive: true });
-          }
-          const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-          const filename = `${Date.now()}-${safeName}`;
-          const filePath = path.join(uploadDir, filename);
-
-          await writeFile(filePath, buffer);
-          url = `/uploads/${filename}`;
-        } catch (err: any) {
-          // If filesystem is read-only (e.g. Vercel serverless), fallback to Data URL
-          const mimeType = file.type || "video/mp4";
-          url = `data:${mimeType};base64,${buffer.toString("base64")}`;
-        }
-      }
-    }
+    const body = await req.json();
+    const title = body.title || "Untitled Video";
+    const url = body.url || "";
+    const thumbnailUrl = body.thumbnailUrl || body.thumbnail || "";
 
     if (!url) {
-      return NextResponse.json({ error: "No URL or file provided" }, { status: 400 });
+      return NextResponse.json({ error: "No URL provided" }, { status: 400 });
     }
 
-    const items = await getWorkItems();
+    const { data, error } = await supabase
+      .from("work_items")
+      .insert([{ title, url, thumbnail_url: thumbnailUrl }])
+      .select()
+      .single();
+
+    if (error) throw error;
 
     const newItem = {
-      id: Date.now().toString(),
-      title,
-      url,
-      thumbnailUrl,
-      date: new Date().toLocaleDateString("en-US", {
+      id: data.id,
+      title: data.title,
+      url: data.url,
+      thumbnailUrl: data.thumbnail_url || "",
+      date: new Date(data.created_at).toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
       }),
     };
-
-    items.unshift(newItem);
-    await saveWorkItems(items);
 
     return NextResponse.json({ success: true, item: newItem });
   } catch (error: any) {
@@ -155,21 +90,16 @@ export async function DELETE(req: Request) {
 
     const body = await req.json().catch(() => ({}));
     const id = body.id;
-    if (!id) {
-      return NextResponse.json({ error: "ID is required" }, { status: 400 });
-    }
+    
+    if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
 
-    const targetId = String(id);
-    let items = await getWorkItems();
+    const { error } = await supabase
+      .from("work_items")
+      .delete()
+      .eq("id", id);
 
-    const initialCount = items.length;
-    items = items.filter((item: any) => String(item.id) !== targetId && item.url !== id);
+    if (error) throw error;
 
-    if (items.length === initialCount) {
-      return NextResponse.json({ error: "Item not found" }, { status: 404 });
-    }
-
-    await saveWorkItems(items);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("DELETE work error:", error);

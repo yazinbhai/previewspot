@@ -33,6 +33,31 @@ const getInstagramId = (url: string) => {
     return match ? match[1] : null;
 };
 
+const formatDirectImageUrl = (url: string) => {
+    if (!url) return "";
+    let clean = url.trim();
+    
+    // ImgBB viewer link conversion (e.g. https://ibb.co/CODE)
+    if (clean.includes("ibb.co/") && !clean.includes("i.ibb.co/")) {
+        const code = clean.split("ibb.co/")[1]?.split("/")[0]?.split("?")[0];
+        if (code) return `https://i.ibb.co/${code}/image.jpg`;
+    }
+
+    // PostImg viewer link conversion (e.g. https://postimg.cc/CODE)
+    if (clean.includes("postimg.cc/") && !clean.includes("i.postimg.cc/")) {
+        const code = clean.split("postimg.cc/")[1]?.split("/")[0]?.split("?")[0];
+        if (code) return `https://i.postimg.cc/${code}/image.png`;
+    }
+
+    // Imgur viewer link conversion (e.g. https://imgur.com/CODE)
+    if (clean.includes("imgur.com/") && !clean.includes("i.imgur.com/")) {
+        const code = clean.split("imgur.com/")[1]?.split("/")[0]?.split("?")[0];
+        if (code) return `https://i.imgur.com/${code}.jpg`;
+    }
+
+    return clean;
+};
+
 const testimonials = [
     { quote: "Our CPA dropped by 40% after switching to their AI creatives. Insane.", author: "Founder, DTC Brand" },
     { quote: "Finally, an agency that understands performance over vanity metrics.", author: "CMO, SaaS Startup" },
@@ -63,7 +88,7 @@ export default function Proof() {
     // Fetch work items
     const fetchItems = async () => {
         try {
-            const res = await fetch("/api/work");
+            const res = await fetch(`/api/work?t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 setItems(data);
@@ -131,6 +156,7 @@ export default function Proof() {
         setUploadError("");
 
         try {
+            const formattedThumbnail = formatDirectImageUrl(thumbnailUrl);
             const res = await fetch("/api/work", {
                 method: "POST",
                 headers: {
@@ -140,7 +166,7 @@ export default function Proof() {
                 body: JSON.stringify({
                     title: uploadTitle,
                     url: youtubeUrl,
-                    thumbnailUrl: thumbnailUrl,
+                    thumbnailUrl: formattedThumbnail,
                 }),
             });
 
@@ -265,7 +291,7 @@ export default function Proof() {
                                 <div className="absolute inset-0 bg-black flex items-center justify-center">
                                     {item.thumbnailUrl ? (
                                         <img
-                                            src={item.thumbnailUrl}
+                                            src={formatDirectImageUrl(item.thumbnailUrl)}
                                             className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity duration-300"
                                             alt={item.title}
                                         />
