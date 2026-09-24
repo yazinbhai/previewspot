@@ -106,3 +106,49 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: error.message || "Delete failed" }, { status: 500 });
   }
 }
+
+export async function PUT(req: Request) {
+  try {
+    const password = req.headers.get("x-admin-password");
+    if (password !== "1996" && password !== (process.env.ADMIN_PASSWORD || "1996")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const id = body.id;
+    const title = body.title;
+    const url = body.url;
+    const thumbnailUrl = body.thumbnailUrl || body.thumbnail || "";
+
+    if (!id || !url || !title) {
+      return NextResponse.json({ error: "ID, Title, and URL are required" }, { status: 400 });
+    }
+
+    const { data, error } = await supabase
+      .from("work_items")
+      .update({ title, url, thumbnail_url: thumbnailUrl })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    const updatedItem = {
+      id: data.id,
+      title: data.title,
+      url: data.url,
+      thumbnailUrl: data.thumbnail_url || "",
+      date: new Date(data.created_at).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+    };
+
+    return NextResponse.json({ success: true, item: updatedItem });
+  } catch (error: any) {
+    console.error("PUT update error:", error);
+    return NextResponse.json({ error: error.message || "Update failed" }, { status: 500 });
+  }
+}
+

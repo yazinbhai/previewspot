@@ -10,7 +10,8 @@ import {
   Plus, 
   Lock, 
   Unlock, 
-  Loader2 
+  Loader2,
+  Edit
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
@@ -84,6 +85,7 @@ export default function Proof() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState("");
+    const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
     // Fetch work items
     const fetchItems = async () => {
@@ -157,34 +159,45 @@ export default function Proof() {
 
         try {
             const formattedThumbnail = formatDirectImageUrl(thumbnailUrl);
+            const method = editingItemId ? "PUT" : "POST";
+            const body = editingItemId 
+                ? JSON.stringify({ id: editingItemId, title: uploadTitle, url: youtubeUrl, thumbnailUrl: formattedThumbnail })
+                : JSON.stringify({ title: uploadTitle, url: youtubeUrl, thumbnailUrl: formattedThumbnail });
+
             const res = await fetch("/api/work", {
-                method: "POST",
+                method,
                 headers: {
                     "Content-Type": "application/json",
                     "x-admin-password": adminPassword || "1996",
                 },
-                body: JSON.stringify({
-                    title: uploadTitle,
-                    url: youtubeUrl,
-                    thumbnailUrl: formattedThumbnail,
-                }),
+                body,
             });
 
             if (res.ok) {
                 setUploadTitle("");
                 setYoutubeUrl("");
                 setThumbnailUrl("");
+                setEditingItemId(null);
                 setIsUploadOpen(false);
                 fetchItems();
             } else {
                 const errorData = await res.json();
-                setUploadError(errorData.error || "Failed to add video. Please try again.");
+                setUploadError(errorData.error || (editingItemId ? "Failed to update video. Please try again." : "Failed to add video. Please try again."));
             }
         } catch (err) {
             setUploadError("Network error. Action failed.");
         } finally {
             setIsUploading(false);
         }
+    };
+
+    const handleEdit = (item: any, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setUploadTitle(item.title);
+        setYoutubeUrl(item.url);
+        setThumbnailUrl(item.thumbnailUrl);
+        setEditingItemId(item.id);
+        setIsUploadOpen(true);
     };
 
     const handleDelete = async (id: string, e: React.MouseEvent) => {
@@ -265,7 +278,13 @@ export default function Proof() {
                             {isAdmin && (
                                 <Button
                                     variant="secondary"
-                                    onClick={() => setIsUploadOpen(true)}
+                                    onClick={() => {
+                                        setEditingItemId(null);
+                                        setUploadTitle("");
+                                        setYoutubeUrl("");
+                                        setThumbnailUrl("");
+                                        setIsUploadOpen(true);
+                                    }}
                                     className="rounded-full flex items-center gap-2 cursor-pointer text-xs py-2.5 px-6"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
@@ -335,15 +354,24 @@ export default function Proof() {
                                     <span className="text-[10px] text-gray-400 mt-0.5">{item.date}</span>
                                 </div>
 
-                                {/* Admin Delete Control */}
+                                {/* Admin Edit/Delete Control */}
                                 {isAdmin && (
-                                    <button
-                                        onClick={(e) => handleDelete(item.id, e)}
-                                        className="absolute top-4 right-4 z-20 p-2 bg-red-600/90 text-white rounded-full hover:bg-red-700 transition-colors shadow-md border border-red-500/20 cursor-pointer"
-                                        title="Delete Video"
-                                    >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
+                                    <div className="absolute top-4 right-4 z-20 flex gap-2">
+                                        <button
+                                            onClick={(e) => handleEdit(item, e)}
+                                            className="p-2 bg-blue-600/90 text-white rounded-full hover:bg-blue-700 transition-colors shadow-md border border-blue-500/20 cursor-pointer"
+                                            title="Edit Video"
+                                        >
+                                            <Edit className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button
+                                            onClick={(e) => handleDelete(item.id, e)}
+                                            className="p-2 bg-red-600/90 text-white rounded-full hover:bg-red-700 transition-colors shadow-md border border-red-500/20 cursor-pointer"
+                                            title="Delete Video"
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
                                 )}
                             </motion.div>
                         ))}
@@ -491,7 +519,7 @@ export default function Proof() {
                             <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-black text-white">
                                 <h3 className="text-xl font-cinematic font-bold flex items-center gap-2">
                                     <Upload className="w-5 h-5 text-[#FF0033]" />
-                                    <span>Add Video to Showcase</span>
+                                    <span>{editingItemId ? "Edit Video" : "Add Video to Showcase"}</span>
                                 </h3>
                                 <button
                                     onClick={() => setIsUploadOpen(false)}
@@ -579,10 +607,10 @@ export default function Proof() {
                                         {isUploading ? (
                                             <>
                                                 <Loader2 className="w-4 h-4 animate-spin text-white" />
-                                                <span>Adding...</span>
+                                                <span>{editingItemId ? "Saving..." : "Adding..."}</span>
                                             </>
                                         ) : (
-                                            <span>Add Video</span>
+                                            <span>{editingItemId ? "Save Changes" : "Add Video"}</span>
                                         )}
                                     </button>
                                 </div>
