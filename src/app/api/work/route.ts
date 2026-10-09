@@ -4,14 +4,16 @@ import { createClient } from "@supabase/supabase-js";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// Use the Vercel integration variables (or manually added ones)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Lazy initialization of Supabase client to prevent build errors when env vars are missing
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || "https://placeholder.supabase.co";
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "placeholder-key";
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 export async function GET() {
   try {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from("work_items")
       .select("*")
@@ -19,7 +21,7 @@ export async function GET() {
 
     if (error) throw error;
 
-    const items = data.map((item: any) => ({
+    const items = (data || []).map((item: any) => ({
       id: item.id,
       title: item.title,
       url: item.url,
@@ -54,6 +56,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No URL provided" }, { status: 400 });
     }
 
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from("work_items")
       .insert([{ title, url, thumbnail_url: thumbnailUrl }])
@@ -93,6 +96,7 @@ export async function DELETE(req: Request) {
     
     if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
 
+    const supabase = getSupabaseClient();
     const { error } = await supabase
       .from("work_items")
       .delete()
@@ -124,6 +128,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "ID, Title, and URL are required" }, { status: 400 });
     }
 
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from("work_items")
       .update({ title, url, thumbnail_url: thumbnailUrl })
@@ -151,4 +156,3 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: error.message || "Update failed" }, { status: 500 });
   }
 }
-

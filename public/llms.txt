@@ -1,0 +1,25 @@
+# Previewspot | AI Performance Creatives & Video Ads
+
+> Previewspot is an AI-powered creative agency that produces high-converting performance video ads, UGC-style creatives, and scripts specifically engineered for Indian DTC and SaaS brands.
+
+## Core Information
+- **Website**: https://previewspot.com
+- **Category**: Performance Marketing, Creative Agency, AI Video Production
+- **Target Audience**: Indian Direct-to-Consumer (DTC) Brands, SaaS Startups, E-commerce Businesses
+- **Primary Offerings**: AI Performance Video Ads, UGC-Style Reels & TikToks, Conversion-Driven Ad Scripts, AI Visual B-Roll & Editing
+- **Contact**: hello@previewspotfilms.com
+- **Booking**: https://calendly.com/previewspotfilms/30min
+
+## Key Services
+- **Performance Video Ad Scripting**: Data-backed hooks and psychological triggers engineered to maximize watch time, click-through rates (CTR), and ROAS.
+- **AI Visual Generation & Editing**: Cinematic B-roll, dynamic kinetic typography, fluid animations, and hyper-realistic AI voiceovers & avatars tailored to brand aesthetics.
+- **UGC-Style Native Content**: Authentic, relatable video ads built for Meta (Instagram Reels, Facebook Ads) and YouTube Shorts that bypass ad fatigue.
+- **Rapid Iteration & Turnaround**: Fast production cycles enabling performance marketers to test 5-10 creative hooks per week.
+
+## Value Proposition
+- **High ROI at Startup Pricing**: Agency-level visual quality without expensive production crews, physical sets, or long retainers.
+- **Built for Scale**: Rapid creative testing to prevent creative fatigue on Meta, Google, and TikTok ad platforms.
+- **Full Creative Ownership**: Clients own all source files, scripts, and rendered ads with zero licensing friction or hidden fees.
+
+## Full Documentation & Context
+- [Full LLM Specification & Context](https://previewspot.com/llms-full.txt): Extended documentation including detailed FAQs, service breakdowns, process steps, and pricing parameters.

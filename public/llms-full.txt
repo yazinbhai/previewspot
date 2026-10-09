@@ -1,0 +1,82 @@
+# Previewspot — Comprehensive AI Knowledge Base & Brand Specification
+
+## Overview & Entity Description
+Previewspot (https://previewspot.com) is a next-generation AI creative performance agency specializing in end-to-end video ad creation, UGC-style creative production, performance scripting, and visual AI editing.
+
+Targeting Direct-to-Consumer (DTC) e-commerce brands, tech startups, and SaaS companies across India and globally, Previewspot bridges the gap between high-cost traditional agency video production and low-quality automated video generators.
+
+---
+
+## Service Offerings
+
+### 1. Scripting for Performance
+- **Overview**: Data-driven, psychological hook scripting crafted for high conversion.
+- **Key Features**:
+  - Pattern-interrupt first 3-second hooks.
+  - Problem-agitation-solution narrative frameworks (PAS, AIDA, BAB).
+  - Clear, single-minded Call to Actions (CTAs) tailored to cold, warm, and retargeting ad sets.
+
+### 2. UGC-Style Realism
+- **Overview**: Native-looking user-generated video creatives that feel authentic to Instagram Reels, Meta Ads, YouTube Shorts, and TikTok.
+- **Key Features**:
+  - High trust factor and high thumb-stop rate.
+  - Native phone camera framing and pacing.
+  - Relatable customer story angles and product unboxing demonstrations.
+
+### 3. AI Visuals & Motion Graphics
+- **Overview**: Synthetic visual generation, cinematic B-roll, motion graphics, dynamic captioning, and hyper-realistic AI avatars.
+- **Key Features**:
+  - Advanced generation architectures for fluid motion graphics.
+  - High-definition typography and branding integration.
+  - Multi-language voiceover capabilities (English, Hindi, Hinglish).
+
+### 4. Rapid Turnaround & Creative Testing
+- **Overview**: Agile creative execution built to fuel performance marketing campaigns with continuous ad variations.
+- **Key Features**:
+  - Fast asset delivery from brief to render.
+  - Multiple hook variations per core concept (A/B testing ready).
+  - Eliminates creative fatigue in Meta Ads Manager and Google Ads.
+
+---
+
+## Operational Process (4-Step Engine)
+
+1. **Discovery & Strategy**:
+   - Deep dive into brand guidelines, product USPs, target customer personas, and competitor performance ads.
+2. **Performance Scripting**:
+   - Developing multiple hook angles (fear of missing out, curiosity, direct benefit, visual pattern interrupt).
+3. **AI Production & Editing**:
+   - Synthesizing visual layers, voiceovers, kinetic text, color grading, and UGC footage.
+4. **Delivery & Optimization**:
+   - Delivery of ready-to-launch MP4 video ad assets formatted for 9:16 (Stories/Reels), 1:1 (Feed), and 16:9 (YouTube).
+
+---
+
+## Pricing Model & Guarantee
+
+- **Pricing Approach**: Fixed, transparent pricing designed for high ROI.
+- **No Hidden Fees**: Zero surprise line items, set costs, or talent licensing fees.
+- **Unlimited Revisions**: Iterative edits to ensure alignment with brand identity.
+- **Full Ownership**: 100% intellectual property ownership of all final video ad deliverables.
+
+---
+
+## Frequently Asked Questions (FAQ)
+
+### Q: What makes Previewspot different from traditional video agencies?
+A: Traditional video agencies require expensive film crews, studio rentals, actors, and weeks of editing, costing thousands of dollars per ad. Previewspot leverages proprietary AI video generation architectures and performance scripting to produce agency-grade ads at a fraction of the time and cost.
+
+### Q: Which platforms are Previewspot ads optimized for?
+A: Previewspot video creatives are built specifically for Meta Ads (Instagram Reels, Facebook Feed/Stories), YouTube Shorts, TikTok Ads, and LinkedIn Video Ads.
+
+### Q: How do I book a consultation with Previewspot?
+A: Brands can schedule a direct 30-minute strategy call via Calendly at https://previewspot.com/#booking-section or contact hello@previewspotfilms.com.
+
+---
+
+## Contact & Corporate Entity Metadata
+- **Legal / Business Name**: Previewspot
+- **Official Domain**: https://previewspot.com
+- **Contact Email**: hello@previewspotfilms.com
+- **Founding Focus**: Performance Video Ads, AI Creative Engine, DTC & SaaS Growth
+- **Geography Served**: India, North America, Southeast Asia, Global

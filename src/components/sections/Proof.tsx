@@ -1,17 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Upload, 
-  Trash2, 
   Play, 
-  X, 
-  Plus, 
-  Lock, 
-  Unlock, 
-  Loader2,
-  Edit
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
@@ -66,26 +60,7 @@ const testimonials = [
 
 export default function Proof() {
     const [items, setItems] = useState<any[]>([]);
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [isUploadOpen, setIsUploadOpen] = useState(false);
     const [activeLightbox, setActiveLightbox] = useState<any | null>(null);
-    
-    // Password Protection State
-    const [adminPassword, setAdminPassword] = useState("");
-    const [isLoginOpen, setIsLoginOpen] = useState(false);
-    const [loginPassword, setLoginPassword] = useState("");
-    const [loginError, setLoginError] = useState("");
-    const [isVerifying, setIsVerifying] = useState(false);
-    
-    // Upload form state
-    const [uploadTitle, setUploadTitle] = useState("");
-    const [youtubeUrl, setYoutubeUrl] = useState("");
-    const [thumbnailUrl, setThumbnailUrl] = useState("");
-    const [uploadType, setUploadType] = useState<"url" | "file">("url");
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [isUploading, setIsUploading] = useState(false);
-    const [uploadError, setUploadError] = useState("");
-    const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
     // Fetch work items
     const fetchItems = async () => {
@@ -103,131 +78,6 @@ export default function Proof() {
     useEffect(() => {
         fetchItems();
     }, []);
-
-    const handleAdminToggle = () => {
-        if (isAdmin) {
-            setIsAdmin(false);
-            setAdminPassword("");
-        } else {
-            setLoginPassword("");
-            setLoginError("");
-            setIsLoginOpen(true);
-        }
-    };
-
-    const handleLoginSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsVerifying(true);
-        setLoginError("");
-
-        try {
-            const res = await fetch("/api/work/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ password: loginPassword }),
-            });
-
-            if (res.ok) {
-                setAdminPassword(loginPassword);
-                setIsAdmin(true);
-                setIsLoginOpen(false);
-            } else {
-                setLoginError("Incorrect passcode. Please try again.");
-            }
-        } catch (err) {
-            setLoginError("Connection error. Verification failed.");
-        } finally {
-            setIsVerifying(false);
-        }
-    };
-
-    const handleUploadSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        if (!uploadTitle.trim()) {
-            setUploadError("Please enter a video title.");
-            return;
-        }
-
-        if (!youtubeUrl.trim()) {
-            setUploadError("Please enter a YouTube or Instagram Reel link.");
-            return;
-        }
-
-        setIsUploading(true);
-        setUploadError("");
-
-        try {
-            const formattedThumbnail = formatDirectImageUrl(thumbnailUrl);
-            const method = editingItemId ? "PUT" : "POST";
-            const body = editingItemId 
-                ? JSON.stringify({ id: editingItemId, title: uploadTitle, url: youtubeUrl, thumbnailUrl: formattedThumbnail })
-                : JSON.stringify({ title: uploadTitle, url: youtubeUrl, thumbnailUrl: formattedThumbnail });
-
-            const res = await fetch("/api/work", {
-                method,
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-admin-password": adminPassword || "1996",
-                },
-                body,
-            });
-
-            if (res.ok) {
-                setUploadTitle("");
-                setYoutubeUrl("");
-                setThumbnailUrl("");
-                setEditingItemId(null);
-                setIsUploadOpen(false);
-                fetchItems();
-            } else {
-                const errorData = await res.json();
-                setUploadError(errorData.error || (editingItemId ? "Failed to update video. Please try again." : "Failed to add video. Please try again."));
-            }
-        } catch (err) {
-            setUploadError("Network error. Action failed.");
-        } finally {
-            setIsUploading(false);
-        }
-    };
-
-    const handleEdit = (item: any, e: React.MouseEvent) => {
-        e.stopPropagation();
-        setUploadTitle(item.title);
-        setYoutubeUrl(item.url);
-        setThumbnailUrl(item.thumbnailUrl);
-        setEditingItemId(item.id);
-        setIsUploadOpen(true);
-    };
-
-    const handleDelete = async (id: string, e: React.MouseEvent) => {
-        e.stopPropagation();
-        
-        if (!confirm("Are you sure you want to delete this video? This action is permanent.")) {
-            return;
-        }
-
-        try {
-            const res = await fetch("/api/work", {
-                method: "DELETE",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "x-admin-password": adminPassword || "1996",
-                },
-                body: JSON.stringify({ id }),
-            });
-
-            if (res.ok) {
-                fetchItems();
-            } else {
-                const data = await res.json().catch(() => ({}));
-                alert(data.error || "Failed to delete video.");
-            }
-        } catch (err) {
-            console.error("Delete video failed:", err);
-            alert("Network error. Action failed.");
-        }
-    };
 
     return (
         <section id="proof-section" className="py-32 bg-[#0B0B0F] relative overflow-hidden">
@@ -259,38 +109,6 @@ export default function Proof() {
                             <h2 className="text-4xl md:text-5xl font-cinematic font-bold text-white">
                                 The <span className="text-gradient">Work</span>
                             </h2>
-                        </div>
-
-                        {/* Admin Action Bar */}
-                        <div className="flex items-center gap-3">
-                            <button
-                                onClick={handleAdminToggle}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-full border text-xs uppercase tracking-wider font-cinematic font-bold transition-all cursor-pointer ${
-                                    isAdmin
-                                        ? "bg-white border-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-                                        : "bg-transparent border-white/20 text-white/70 hover:border-white/50"
-                                }`}
-                            >
-                                {isAdmin ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
-                                <span>{isAdmin ? "Admin On" : "Admin Mode"}</span>
-                            </button>
-
-                            {isAdmin && (
-                                <Button
-                                    variant="secondary"
-                                    onClick={() => {
-                                        setEditingItemId(null);
-                                        setUploadTitle("");
-                                        setYoutubeUrl("");
-                                        setThumbnailUrl("");
-                                        setIsUploadOpen(true);
-                                    }}
-                                    className="rounded-full flex items-center gap-2 cursor-pointer text-xs py-2.5 px-6"
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    <span>Upload Video</span>
-                                </Button>
-                            )}
                         </div>
                     </div>
 
@@ -353,26 +171,6 @@ export default function Proof() {
                                     </h3>
                                     <span className="text-[10px] text-gray-400 mt-0.5">{item.date}</span>
                                 </div>
-
-                                {/* Admin Edit/Delete Control */}
-                                {isAdmin && (
-                                    <div className="absolute top-4 right-4 z-20 flex gap-2">
-                                        <button
-                                            onClick={(e) => handleEdit(item, e)}
-                                            className="p-2 bg-blue-600/90 text-white rounded-full hover:bg-blue-700 transition-colors shadow-md border border-blue-500/20 cursor-pointer"
-                                            title="Edit Video"
-                                        >
-                                            <Edit className="w-3.5 h-3.5" />
-                                        </button>
-                                        <button
-                                            onClick={(e) => handleDelete(item.id, e)}
-                                            className="p-2 bg-red-600/90 text-white rounded-full hover:bg-red-700 transition-colors shadow-md border border-red-500/20 cursor-pointer"
-                                            title="Delete Video"
-                                        >
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </button>
-                                    </div>
-                                )}
                             </motion.div>
                         ))}
                     </div>
@@ -383,7 +181,7 @@ export default function Proof() {
                             <Upload className="w-12 h-12 text-white/30 mx-auto mb-4" />
                             <h3 className="text-lg font-cinematic font-bold text-white mb-2">No Videos Available</h3>
                             <p className="text-gray-400 text-sm max-w-md mx-auto">
-                                Enable admin mode and upload vertical videos to build your dynamic work showcase.
+                                Videos uploaded via the admin portal will appear here.
                             </p>
                         </div>
                     )}
@@ -497,213 +295,7 @@ export default function Proof() {
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            {/* Upload Video Modal */}
-            <AnimatePresence>
-                {isUploadOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6"
-                        onClick={() => setIsUploadOpen(false)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.95, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.95, y: 20 }}
-                            className="bg-[#0B0B0F] border border-white/10 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {/* Modal Header */}
-                            <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-black text-white">
-                                <h3 className="text-xl font-cinematic font-bold flex items-center gap-2">
-                                    <Upload className="w-5 h-5 text-[#FF0033]" />
-                                    <span>{editingItemId ? "Edit Video" : "Add Video to Showcase"}</span>
-                                </h3>
-                                <button
-                                    onClick={() => setIsUploadOpen(false)}
-                                    className="p-1.5 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white rounded-lg transition-all cursor-pointer"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
-
-                            {/* Form */}
-                            <form onSubmit={handleUploadSubmit} className="p-8 space-y-6">
-                                {/* Title */}
-                                <div className="space-y-2">
-                                    <label htmlFor="title" className="text-sm font-semibold text-gray-300">
-                                        Video Title
-                                    </label>
-                                    <input
-                                        id="title"
-                                        type="text"
-                                        required
-                                        value={uploadTitle}
-                                        onChange={(e) => setUploadTitle(e.target.value)}
-                                        placeholder="e.g. Fashion Brand Instagram Reel Ad"
-                                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
-                                    />
-                                </div>
-
-                                {/* Video Link Input */}
-                                <div className="space-y-2">
-                                    <label htmlFor="youtubeUrl" className="text-sm font-semibold text-gray-300">
-                                        Video Link (YouTube or Instagram Reel)
-                                    </label>
-                                    <input
-                                        id="youtubeUrl"
-                                        type="text"
-                                        required
-                                        value={youtubeUrl}
-                                        onChange={(e) => setYoutubeUrl(e.target.value)}
-                                        placeholder="e.g. https://www.instagram.com/reel/... or https://youtube.com/watch?v=..."
-                                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
-                                    />
-                                </div>
-
-                                {/* Thumbnail Image URL Input */}
-                                <div className="space-y-2">
-                                    <label htmlFor="thumbnailUrl" className="text-sm font-semibold text-gray-300 flex items-center justify-between">
-                                        <span>Thumbnail Image Link</span>
-                                        <span className="text-xs text-gray-400 font-normal">(Optional)</span>
-                                    </label>
-                                    <input
-                                        id="thumbnailUrl"
-                                        type="text"
-                                        value={thumbnailUrl}
-                                        onChange={(e) => setThumbnailUrl(e.target.value)}
-                                        placeholder="e.g. https://.../thumbnail.jpg (Leave empty for default)"
-                                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
-                                    />
-                                    <p className="text-xs text-gray-400">
-                                        Optional custom thumbnail image for the preview card.
-                                    </p>
-                                </div>
-
-                                {/* Error Message */}
-                                {uploadError && (
-                                    <p className="text-xs font-semibold text-red-400 bg-red-950/20 p-3 rounded-lg border border-red-900/30 animate-pulse">
-                                        {uploadError}
-                                    </p>
-                                )}
-
-                                {/* Submit Action */}
-                                <div className="flex gap-4 pt-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsUploadOpen(false)}
-                                        disabled={isUploading}
-                                        className="flex-1 py-3 border border-white/10 hover:border-white/25 hover:bg-white/5 rounded-xl text-gray-300 font-semibold transition-colors disabled:opacity-50 cursor-pointer"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={isUploading || !uploadTitle || !youtubeUrl}
-                                        className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#FF0033] via-[#FF3355] to-[#FF9900] text-white font-semibold flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 disabled:opacity-50"
-                                    >
-                                        {isUploading ? (
-                                            <>
-                                                <Loader2 className="w-4 h-4 animate-spin text-white" />
-                                                <span>{editingItemId ? "Saving..." : "Adding..."}</span>
-                                            </>
-                                        ) : (
-                                            <span>{editingItemId ? "Save Changes" : "Add Video"}</span>
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Admin Passcode Modal */}
-            <AnimatePresence>
-                {isLoginOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6"
-                        onClick={() => setIsLoginOpen(false)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.95, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.95, y: 20 }}
-                            className="bg-[#0B0B0F] border border-white/10 rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {/* Modal Header */}
-                            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-black text-white">
-                                <h3 className="text-lg font-cinematic font-bold flex items-center gap-2">
-                                    <Lock className="w-4 h-4 text-[#FF0033]" />
-                                    <span>Admin Access</span>
-                                </h3>
-                                <button
-                                    onClick={() => setIsLoginOpen(false)}
-                                    className="p-1.5 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white rounded-lg transition-all cursor-pointer"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
-                            </div>
-
-                            {/* Form */}
-                            <form onSubmit={handleLoginSubmit} className="p-6 space-y-4">
-                                <div className="space-y-2">
-                                    <label htmlFor="admin-pass" className="text-sm font-semibold text-gray-300">
-                                        Enter Admin Passcode
-                                    </label>
-                                    <input
-                                        id="admin-pass"
-                                        type="password"
-                                        required
-                                        autoFocus
-                                        value={loginPassword}
-                                        onChange={(e) => setLoginPassword(e.target.value)}
-                                        placeholder="Enter passcode"
-                                        className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#FF0033]/50 text-white transition-colors"
-                                    />
-                                </div>
-
-                                {loginError && (
-                                    <p className="text-xs font-semibold text-red-400 bg-red-950/20 p-2.5 rounded-lg border border-red-900/30 animate-pulse">
-                                        {loginError}
-                                    </p>
-                                )}
-
-                                <div className="flex gap-3 pt-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsLoginOpen(false)}
-                                        disabled={isVerifying}
-                                        className="flex-1 py-2.5 border border-white/10 hover:border-white/25 hover:bg-white/5 rounded-xl text-gray-300 text-sm font-semibold transition-colors disabled:opacity-50 cursor-pointer"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={isVerifying || !loginPassword}
-                                        className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#FF0033] via-[#FF3355] to-[#FF9900] text-white text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 disabled:opacity-50"
-                                    >
-                                        {isVerifying ? (
-                                            <>
-                                                <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
-                                                <span>Verifying...</span>
-                                            </>
-                                        ) : (
-                                            <span>Access</span>
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </section>
     );
 }
+
